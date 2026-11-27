@@ -1,0 +1,32 @@
+[timestart] 0
+[size] 1800 900
+[*]
+[treeopen] tb_dsd8.
+[treeopen] tb_dsd8.uut.
+-dbone
+[sst_expanded] 1
+[pattern_trace] 1
+
+tb_dsd8.clk
+tb_dsd8.rst_n
+wave_dump.s1_mnemonic
+tb_dsd8.uut.s1_pc
+wave_dump.s2_mnemonic
+tb_dsd8.uut.s2_pc
+tb_dsd8.uut.a
+tb_dsd8.uut.b
+tb_dsd8.uut.alu_result
+tb_dsd8.uut.flags_out
+tb_dsd8.uut.alu_flags
+wave_dump.s3_mnemonic
+tb_dsd8.uut.s3_rf_we
+tb_dsd8.uut.s3_rf_addr
+tb_dsd8.uut.s3_rf_data
+tb_dsd8.retire
+tb_dsd8.retire_pc
+tb_dsd8.retire_ir
+tb_dsd8.retire_flags
+tb_dsd8.uut.pipeline_stall
+tb_dsd8.uut.load_use_stall
+tb_dsd8.uut.branch_taken
+tb_dsd8.uut.io_stall

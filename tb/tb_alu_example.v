@@ -33,6 +33,7 @@ module tb_alu_example;
     wire       flag_z, flag_n, flag_c, flag_v;
 
     integer errors;
+    integer checks;
     integer i;
 
     alu dut (
@@ -84,9 +85,11 @@ module tb_alu_example;
         input [7:0] fa, fb;
         input [3:0] fop;
         reg result7, a7;
+        reg [7:0] result_value;
         begin
             a7 = fa[7];
-            result7 = expected_result(fa, fb, fop)[7];
+            result_value = expected_result(fa, fb, fop);
+            result7 = result_value[7];
             case (fop)
                 4'h4:    expected_overflow = (fa[7] == fb[7]) && (result7 != a7);
                 4'h5, 4'hB: expected_overflow = (fa[7] != fb[7]) && (result7 != a7);
@@ -106,6 +109,7 @@ module tb_alu_example;
             exp_n = exp_result[7];
             exp_c = expected_carry(ta, tb, top);
             exp_v = expected_overflow(ta, tb, top);
+            checks = checks + 1;
 
             if (result !== exp_result || flag_z !== exp_z || flag_n !== exp_n
                     || flag_c !== exp_c || flag_v !== exp_v) begin
@@ -113,12 +117,14 @@ module tb_alu_example;
                 $display("  MISMATCH (%0s): a=%02h b=%02h op=%0h -> got result=%02h z=%b n=%b c=%b v=%b, expected result=%02h z=%b n=%b c=%b v=%b",
                           label, ta, tb, top, result, flag_z, flag_n, flag_c, flag_v,
                           exp_result, exp_z, exp_n, exp_c, exp_v);
-            end
+            end else
+                $display("CHECK PASS (%0s)", label);
         end
     endtask
 
     initial begin
         errors = 0;
+        checks = 0;
 
         // one directed vector per opcode
         check(8'h05, 8'h03, 4'h4, "ADD");
@@ -142,10 +148,12 @@ module tb_alu_example;
             check(8'h01, a, 4'h5, "SUB corner (b)");
         end
 
+        $display("CHECK SUMMARY: %0d checks, %0d errors", checks, errors);
         if (errors == 0) begin
             $display("TESTBENCH: PASS");
         end else begin
             $display("TESTBENCH: FAIL (%0d errors)", errors);
+            $fatal(1, "tb_alu_example failed");
         end
         $finish;
     end
