@@ -11,7 +11,7 @@
 
 PYTHON ?= python3
 
-.PHONY: all lint test conformance clean
+.PHONY: all lint test conformance wave synth schematics visualize clean
 
 all: lint test conformance
 
@@ -23,6 +23,18 @@ test:
 
 conformance:
 	$(PYTHON) scripts/run_conformance.py
+
+wave:
+	$(PYTHON) scripts/run_waves.py
+
+synth:
+	$(PYTHON) scripts/run_synth.py
+
+schematics:
+	$(PYTHON) scripts/make_schematics.py
+
+visualize:
+	$(PYTHON) scripts/run_visualizer.py
 
 clean:
 	rm -rf build

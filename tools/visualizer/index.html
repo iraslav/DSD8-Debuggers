@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DSD-8 Pipeline Visualizer</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark">D8</div>
+    <div>
+      <p class="eyebrow">RTL CYCLE TRACE</p>
+      <h1>DSD-8 Pipeline Explorer</h1>
+    </div>
+    <div class="live-pill"><span></span> LOCAL SIMULATION</div>
+  </header>
+
+  <main>
+    <section class="panel editor-panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">01 / PROGRAM</p>
+          <h2>Write or paste assembly</h2>
+        </div>
+        <label class="cycle-limit">
+          Cycle limit
+          <input id="cycleLimit" type="number" min="1" max="1000" value="250">
+        </label>
+      </div>
+      <textarea id="assembly" spellcheck="false" aria-label="DSD-8 assembly program">LDI R1, 5
+LDI R2, 3
+ADD R3, R1, R2
+SUB R4, R1, R2
+AND R5, R1, R2
+OR R6, R1, R2
+XOR R7, R1, R2
+LDI R4, 8
+ST [R4], R3
+CMP R1, R2
+BEQ DONE
+OUT 0x02, R3
+DONE: HLT</textarea>
+      <div class="editor-footer">
+        <p>Uses the assembler and the real RTL testbench. Labels and comments are supported.</p>
+        <button id="runButton" class="primary-button">Run RTL <span aria-hidden="true">→</span></button>
+      </div>
+      <p id="status" class="status" role="status" aria-live="polite">Ready. Run the sample or enter your own program.</p>
+    </section>
+
+    <section class="panel transport-panel">
+      <div class="transport-top">
+        <div>
+          <p class="eyebrow">02 / CLOCK</p>
+          <h2 id="cycleTitle">No trace loaded</h2>
+        </div>
+        <div class="transport-buttons">
+          <button id="firstButton" class="icon-button" disabled title="Go to first cycle">|◀</button>
+          <button id="backButton" class="icon-button" disabled title="Previous cycle">◀</button>
+          <button id="playButton" class="play-button" disabled>▶ Play</button>
+          <button id="pauseButton" class="icon-button" disabled title="Pause">Ⅱ</button>
+          <button id="nextButton" class="icon-button" disabled title="Next cycle">▶</button>
+        </div>
+      </div>
+      <div class="seek-row">
+        <span id="seekStart">Cycle 0</span>
+        <input id="cycleSlider" type="range" min="0" max="0" value="0" disabled aria-label="Simulation cycle">
+        <span id="seekEnd">Cycle 0</span>
+        <label class="speed-control">Speed
+          <input id="speed" type="range" min="100" max="1000" step="50" value="450">
+          <span id="speedValue">450 ms</span>
+        </label>
+      </div>
+      <div id="eventStrip" class="event-strip"><span class="muted">Hazards and retire events appear here.</span></div>
+    </section>
+
+    <section class="stage-grid" aria-label="Pipeline stages">
+      <article class="stage-card fetch-card">
+        <div class="stage-head"><span class="stage-number">01</span><span class="stage-name">Fetch</span><span class="stage-signal">s1</span></div>
+        <p id="fetchPc" class="stage-pc">PC ---</p>
+        <p id="fetchInstruction" class="stage-instruction">Waiting for trace</p>
+      </article>
+      <article class="stage-card execute-card">
+        <div class="stage-head"><span class="stage-number">02</span><span class="stage-name">Execute</span><span class="stage-signal">s2</span></div>
+        <p id="executePc" class="stage-pc">PC ---</p>
+        <p id="executeInstruction" class="stage-instruction">Waiting for trace</p>
+      </article>
+      <article class="stage-card writeback-card">
+        <div class="stage-head"><span class="stage-number">03</span><span class="stage-name">Writeback</span><span class="stage-signal">s3</span></div>
+        <p id="writebackPc" class="stage-pc">PC ---</p>
+        <p id="writebackInstruction" class="stage-instruction">Waiting for trace</p>
+      </article>
+    </section>
+
+    <section class="workspace-grid">
+      <article class="panel code-panel">
+        <div class="section-heading compact-heading">
+          <div><p class="eyebrow">INSTRUCTION MEMORY</p><h2>Program flow</h2></div>
+          <span id="programCount" class="count-pill">No program</span>
+        </div>
+        <div id="programListing" class="program-listing">
+          <p class="empty-message">Assembled instructions will appear here.</p>
+        </div>
+      </article>
+
+      <div class="inspector-column">
+        <article class="panel">
+          <div class="section-heading compact-heading">
+            <div><p class="eyebrow">ARCHITECTURAL STATE</p><h2>Registers</h2></div>
+            <span id="flagSummary" class="flag-summary">Z 0 · N 0 · C 0 · V 0</span>
+          </div>
+          <div id="registerGrid" class="register-grid"></div>
+          <div id="flagsRow" class="flags-row"></div>
+        </article>
+
+        <article class="panel">
+          <div class="section-heading compact-heading">
+            <div><p class="eyebrow">DATA MEMORY</p><h2>Bytes 0x00–0x0F</h2></div>
+            <span id="memoryEvent" class="memory-event">No store yet</span>
+          </div>
+          <div id="memoryGrid" class="memory-grid"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="detail-grid">
+      <article class="panel detail-panel">
+        <p class="eyebrow">ALU</p>
+        <h2>Current operation</h2>
+        <div class="alu-readout">
+          <span><small>a</small><b id="aluA">--</b></span>
+          <span class="operator">+</span>
+          <span><small>b</small><b id="aluB">--</b></span>
+          <span class="operator">→</span>
+          <span><small>result</small><b id="aluResult">--</b></span>
+        </div>
+        <p id="aluFlags" class="muted">ALU flags Z/N/C/V: ----</p>
+      </article>
+      <article class="panel detail-panel">
+        <p class="eyebrow">I/O BUS</p>
+        <h2>Port activity</h2>
+        <p id="ioReadout" class="io-readout">No active I/O request</p>
+        <p id="ledReadout" class="muted">LED output: 0x00</p>
+      </article>
+      <article class="panel detail-panel retire-panel">
+        <div class="section-heading compact-heading">
+          <div><p class="eyebrow">RETIRE</p><h2>Recent completed instructions</h2></div>
+        </div>
+        <div id="retireList" class="retire-list"><p class="empty-message">No instructions retired yet.</p></div>
+      </article>
+    </section>
+    <footer>Cycle trace is generated by Icarus Verilog from the project RTL. Playback is local to this browser.</footer>
+  </main>
+</body>
+</html>

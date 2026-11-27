@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+"""Write a compact, RTL-signal-labelled DSD-8 block diagram."""
+
+import pathlib
+import shutil
+import subprocess
+
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+OUT = ROOT / "doc" / "simple" / "block_diagram.svg"
+
+
+def main():
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    svg = """<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="760" viewBox="0 0 1440 760">
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+    <path d="M0,0 L10,4 L0,8 Z" fill="#334155"/>
+  </marker>
+  <style>
+    text { font-family: Arial, Helvetica, sans-serif; fill: #172033; }
+    .title { font-size: 32px; font-weight: 700; }
+    .head { font-size: 23px; font-weight: 700; }
+    .body { font-size: 19px; }
+    .sig { font-size: 16px; font-family: Consolas, monospace; fill: #334155; }
+    .edge { stroke: #334155; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+  </style>
+</defs>
+<rect width="1440" height="760" fill="#ffffff"/>
+<text class="title" x="48" y="58">DSD-8: one instruction moves through three stages</text>
+
+<rect x="50" y="145" width="230" height="150" rx="18" fill="#eef2f7" stroke="#64748b" stroke-width="3"/>
+<text class="head" text-anchor="middle" x="165" y="194">PC + Instruction</text>
+<text class="head" text-anchor="middle" x="165" y="224">Memory</text>
+<text class="body" text-anchor="middle" x="165" y="265">program words</text>
+
+<rect x="345" y="145" width="250" height="150" rx="18" fill="#dbeafe" stroke="#2563eb" stroke-width="4"/>
+<text class="head" text-anchor="middle" x="470" y="202">Stage 1</text>
+<text class="body" text-anchor="middle" x="470" y="239">Fetch</text>
+<text class="sig" text-anchor="middle" x="470" y="272">s1_pc, s1_ir, s1_valid</text>
+
+<rect x="660" y="145" width="330" height="150" rx="18" fill="#fef3c7" stroke="#d97706" stroke-width="4"/>
+<text class="head" text-anchor="middle" x="825" y="187">Stage 2: Execute</text>
+<text class="body" text-anchor="middle" x="825" y="222">decode · register read · ALU</text>
+<text class="body" text-anchor="middle" x="825" y="251">memory / I/O access</text>
+<text class="sig" text-anchor="middle" x="825" y="278">s2_pc, s2_ir, s2_valid</text>
+
+<rect x="1055" y="145" width="335" height="150" rx="18" fill="#dcfce7" stroke="#16a34a" stroke-width="4"/>
+<text class="head" text-anchor="middle" x="1222" y="187">Stage 3: Writeback</text>
+<text class="body" text-anchor="middle" x="1222" y="222">register write · flags</text>
+<text class="body" text-anchor="middle" x="1222" y="251">retire</text>
+<text class="sig" text-anchor="middle" x="1222" y="278">s3_pc, s3_ir, s3_valid</text>
+
+<rect x="575" y="500" width="300" height="135" rx="18" fill="#f1f5f9" stroke="#64748b" stroke-width="3"/>
+<text class="head" text-anchor="middle" x="725" y="550">Register File</text>
+<text class="body" text-anchor="middle" x="725" y="583">two reads · one write</text>
+<text class="sig" text-anchor="middle" x="725" y="613">rf_rd1, rf_rd2</text>
+
+<rect x="1025" y="500" width="300" height="135" rx="18" fill="#f1f5f9" stroke="#64748b" stroke-width="3"/>
+<text class="head" text-anchor="middle" x="1175" y="550">Data Memory</text>
+<text class="body" text-anchor="middle" x="1175" y="583">byte load / store</text>
+<text class="sig" text-anchor="middle" x="1175" y="613">dmem_rdata</text>
+
+<path class="edge" d="M280 220 H345"/>
+<text class="sig" text-anchor="middle" x="312" y="125">imem_addr / imem_data</text>
+<path class="edge" d="M595 220 H660"/>
+<text class="sig" text-anchor="middle" x="627" y="125">s1_pc, s1_ir</text>
+<path class="edge" d="M990 220 H1055"/>
+<text class="sig" text-anchor="middle" x="1022" y="125">s2_pc, s2_ir</text>
+
+<path class="edge" d="M725 500 V405 H760 V295"/>
+<text class="sig" text-anchor="middle" x="650" y="385">rf_rd1, rf_rd2</text>
+<path class="edge" d="M1140 295 V410 H1175 V500"/>
+<text class="sig" text-anchor="middle" x="1237" y="390">s3_mem_we, s3_mem_addr, s3_mem_data</text>
+<path class="edge" d="M1025 560 H940 V325 H920 V295"/>
+<text class="sig" text-anchor="middle" x="969" y="350">dmem_rdata</text>
+<path class="edge" d="M1222 295 V455 H845 V500"/>
+<text class="sig" text-anchor="middle" x="1045" y="445">s3_rf_we, s3_rf_addr, s3_rf_data</text>
+
+<rect x="50" y="680" width="22" height="22" rx="5" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+<text class="sig" x="82" y="698">Stage 1</text>
+<rect x="190" y="680" width="22" height="22" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+<text class="sig" x="222" y="698">Stage 2</text>
+<rect x="330" y="680" width="22" height="22" rx="5" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text class="sig" x="362" y="698">Stage 3</text>
+<text class="sig" x="575" y="698">Forwarding: s3_rf_data can feed operands a and b.</text>
+</svg>
+"""
+    OUT.write_text(svg, encoding="utf-8")
+    print(f"Wrote {OUT}")
+
+    renderer = shutil.which("rsvg-convert")
+    if renderer:
+        png = OUT.with_suffix(".png")
+        subprocess.run([renderer, "-o", str(png), str(OUT)], check=True)
+        print(f"Wrote {png}")
+    else:
+        print("PNG not created: rsvg-convert is not installed; the SVG is complete.")
+
+
+if __name__ == "__main__":
+    main()

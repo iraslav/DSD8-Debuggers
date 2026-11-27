@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2160" height="850" viewBox="0 0 2160 850">
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172033}.title{font-size:30px;font-weight:bold}.sub{font-size:18px}.head{font-size:18px;font-weight:bold}.cell{font-size:17px}.note{font-size:17px}.mono{font-family:Consolas,monospace}</style>
+<rect width="2160" height="850" fill="#fff"/>
+<text class="title" x="36" y="48">DSD-8 pipeline timing: first 8 active cycles from a real Icarus simulation</text>
+<text class="sub" x="36" y="80">Cycle 1 is the first valid fetch; each clock is 10 ns. Signal times below are simulator times.</text>
+<rect x="230" y="110" width="140" height="42" fill="#e2e8f0" stroke="#94a3b8"/>
+<text class="head" x="240" y="137">Cycle</text>
+<rect x="375" y="110" width="315" height="42" fill="#e2e8f0" stroke="#94a3b8"/>
+<text class="head" x="385" y="137">Time (ns)</text>
+<rect x="700" y="110" width="315" height="42" fill="#e2e8f0" stroke="#94a3b8"/>
+<text class="head" x="710" y="137">Fetch (s1)</text>
+<rect x="1025" y="110" width="315" height="42" fill="#e2e8f0" stroke="#94a3b8"/>
+<text class="head" x="1035" y="137">Execute (s2)</text>
+<rect x="1350" y="110" width="375" height="42" fill="#e2e8f0" stroke="#94a3b8"/>
+<text class="head" x="1360" y="137">Writeback (s3)</text>
+<rect x="1745" y="110" width="390" height="42" fill="#e2e8f0" stroke="#94a3b8"/>
+<text class="head" x="1755" y="137">Event</text>
+<rect x="230" y="152" width="140" height="50" fill="#fff" stroke="#cbd5e1"/>
+<text class="cell" x="240" y="183">1</text>
+<rect x="375" y="152" width="315" height="50" fill="#fff" stroke="#cbd5e1"/>
+<text class="cell" x="385" y="183">45</text>
+<rect x="700" y="152" width="315" height="50" fill="#dbeafe" stroke="#cbd5e1"/>
+<text class="cell" x="710" y="183">000 LDI R1,10</text>
+<rect x="1025" y="152" width="315" height="50" fill="#fef3c7" stroke="#cbd5e1"/>
+<text class="cell" x="1035" y="183">-</text>
+<rect x="1350" y="152" width="375" height="50" fill="#dcfce7" stroke="#cbd5e1"/>
+<text class="cell" x="1360" y="183">-</text>
+<rect x="1745" y="152" width="390" height="50" fill="#fff" stroke="#cbd5e1"/>
+<text class="cell" x="1755" y="183">-</text>
+<rect x="230" y="202" width="140" height="50" fill="#fff" stroke="#cbd5e1"/>
+<text class="cell" x="240" y="233">2</text>
+<rect x="375" y="202" width="315" height="50" fill="#fff" stroke="#cbd5e1"/>
+<text class="cell" x="385" y="233">55</text>
+<rect x="700" y="202" width="315" height="50" fill="#dbeafe" stroke="#cbd5e1"/>
+<text class="cell" x="710" y="233">001 LDI R2,10</text>
+<rect x="1025" y="202" width="315" height="50" fill="#fef3c7" stroke="#cbd5e1"/>
+<text class="cell" x="1035" y="233">000 LDI R1,10</text>
+<rect x="1350" y="202" width="375" height="50" fill="#dcfce7" stroke="#cbd5e1"/>
+<text class="cell" x="1360" y="233">-</text>
+<rect x="1745" y="202" width="390" height="50" fill="#fff" stroke="#cbd5e1"/>
+<text class="cell" x="1755" y="233">-</text>
+<rect x="230" y="252" width="140" height="50" fill="#fff7ed" stroke="#cbd5e1"/>
+<text class="cell" x="240" y="283">3</text>
+<rect x="375" y="252" width="315" height="50" fill="#fff7ed" stroke="#cbd5e1"/>
+<text class="cell" x="385" y="283">65</text>
+<rect x="700" y="252" width="315" height="50" fill="#dbeafe" stroke="#cbd5e1"/>
+<text class="cell" x="710" y="283">002 ADD R3,R1,R2</text>
+<rect x="1025" y="252" width="315" height="50" fill="#fef3c7" stroke="#cbd5e1"/>
+<text class="cell" x="1035" y="283">001 LDI R2,10</text>
+<rect x="1350" y="252" width="375" height="50" fill="#dcfce7" stroke="#cbd5e1"/>
+<text class="cell" x="1360" y="283">000 LDI R1,10</text>
+<rect x="1745" y="252" width="390" height="50" fill="#fff7ed" stroke="#cbd5e1"/>
+<text class="cell" x="1755" y="283" font-weight="bold">FIRST RETIRE (PC 000)</text>
+<rect x="230" y="302" width="140" height="50" fill="#fff7ed" stroke="#cbd5e1"/>
+<text class="cell" x="240" y="333">4</text>
+<rect x="375" y="302" width="315" height="50" fill="#fff7ed" stroke="#cbd5e1"/>
+<text class="cell" x="385" y="333">75</text>
+<rect x="700" y="302" width="315" height="50" fill="#dbeafe" stroke="#cbd5e1"/>
+<text class="cell" x="710" y="333">003 SUB R4,R3,R3</text>
+<rect x="1025" y="302" width="315" height="50" fill="#fef3c7" stroke="#cbd5e1"/>
+<text class="cell" x="1035" y="333">002 ADD R3,R1,R2</text>
+<rect x="1350" y="302" width="375" height="50" fill="#dcfce7" stroke="#cbd5e1"/>
+<text class="cell" x="1360" y="333">001 LDI R2,10</text>
+<rect x="1745" y="302" width="390" height="50" fill="#fff7ed" stroke="#cbd5e1"/>
+<text class="cell" x="1755" y="333" font-weight="bold">forward: s3_rf_data -> a,b</text>
+<rect x="230" y="352" width="140" height="50" fill="#fff7ed" stroke="#cbd5e1"/>
+<text class="cell" x="240" y="383">5</text>
+<rect x="375" y="352" width="315" height="50" fill="#fff7ed" stroke="#cbd5e1"/>
+<text class="cell" x="385" y="383">85</text>
+<rect x="700" y="352" width="315" height="50" fill="#dbeafe" stroke="#cbd5e1"/>
+<text class="cell" x="710" y="383">004 ST [R1],R3</text>
+<rect x="1025" y="352" width="315" height="50" fill="#fef3c7" stroke="#cbd5e1"/>
+<text class="cell" x="1035" y="383">003 SUB R4,R3,R3</text>
+<rect x="1350" y="352" width="375" height="50" fill="#dcfce7" stroke="#cbd5e1"/>
+<text class="cell" x="1360" y="383">002 ADD R3,R1,R2</text>
+<rect x="1745" y="352" width="390" height="50" fill="#fff7ed" stroke="#cbd5e1"/>
+<text class="cell" x="1755" y="383" font-weight="bold">forward: s3_rf_data -> a,b</text>
+<rect x="230" y="402" width="140" height="50" fill="#fff" stroke="#cbd5e1"/>
+<text class="cell" x="240" y="433">6</text>
+<rect x="375" y="402" width="315" height="50" fill="#fff" stroke="#cbd5e1"/>
+<text class="cell" x="385" y="433">95</text>
+<rect x="700" y="402" width="315" height="50" fill="#dbeafe" stroke="#cbd5e1"/>
+<text class="cell" x="710" y="433">005 LD R5,[R1]</text>
+<rect x="1025" y="402" width="315" height="50" fill="#fef3c7" stroke="#cbd5e1"/>
+<text class="cell" x="1035" y="433">004 ST [R1],R3</text>
+<rect x="1350" y="402" width="375" height="50" fill="#dcfce7" stroke="#cbd5e1"/>
+<text class="cell" x="1360" y="433">003 SUB R4,R3,R3</text>
+<rect x="1745" y="402" width="390" height="50" fill="#fff" stroke="#cbd5e1"/>
+<text class="cell" x="1755" y="433">-</text>
+<rect x="230" y="452" width="140" height="50" fill="#fff" stroke="#cbd5e1"/>
+<text class="cell" x="240" y="483">7</text>
+<rect x="375" y="452" width="315" height="50" fill="#fff" stroke="#cbd5e1"/>
+<text class="cell" x="385" y="483">105</text>
+<rect x="700" y="452" width="315" height="50" fill="#dbeafe" stroke="#cbd5e1"/>
+<text class="cell" x="710" y="483">006 BEQ 7</text>
+<rect x="1025" y="452" width="315" height="50" fill="#fef3c7" stroke="#cbd5e1"/>
+<text class="cell" x="1035" y="483">005 LD R5,[R1]</text>
+<rect x="1350" y="452" width="375" height="50" fill="#dcfce7" stroke="#cbd5e1"/>
+<text class="cell" x="1360" y="483">004 ST [R1],R3</text>
+<rect x="1745" y="452" width="390" height="50" fill="#fff" stroke="#cbd5e1"/>
+<text class="cell" x="1755" y="483">-</text>
+<rect x="230" y="502" width="140" height="50" fill="#fff7ed" stroke="#cbd5e1"/>
+<text class="cell" x="240" y="533">8</text>
+<rect x="375" y="502" width="315" height="50" fill="#fff7ed" stroke="#cbd5e1"/>
+<text class="cell" x="385" y="533">115</text>
+<rect x="700" y="502" width="315" height="50" fill="#dbeafe" stroke="#cbd5e1"/>
+<text class="cell" x="710" y="533">007 HLT</text>
+<rect x="1025" y="502" width="315" height="50" fill="#fef3c7" stroke="#cbd5e1"/>
+<text class="cell" x="1035" y="533">006 BEQ 7</text>
+<rect x="1350" y="502" width="375" height="50" fill="#dcfce7" stroke="#cbd5e1"/>
+<text class="cell" x="1360" y="533">005 LD R5,[R1]</text>
+<rect x="1745" y="502" width="390" height="50" fill="#fff7ed" stroke="#cbd5e1"/>
+<text class="cell" x="1755" y="533" font-weight="bold">branch_taken; fetch flushed</text>
+<rect x="36" y="580" width="2078" height="145" rx="14" fill="#fff1f2" stroke="#be123c" stroke-width="3"/>
+<text class="head" x="58" y="614">Load-use repro from a separate real simulation: repeated stall, not a one-cycle bubble</text>
+<text class="note" x="58" y="648">load_use_stall = 1 at 85, 95, 105 ns and continues beyond these samples.</text>
+<text class="note" x="58" y="678">s1 and s2 stay on the same instructions; then retire_pc=3 repeats. This is a current RTL bug.</text>
+<text class="note mono" x="58" y="708">Wave: doc/simple/load_use_repro.vcd   Slow I/O wave: doc/simple/slow_io_example.vcd, io_stall starts at 65 ns</text>
+</svg>

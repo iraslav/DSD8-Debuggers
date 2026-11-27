@@ -70,6 +70,8 @@ def assemble_and_simulate_gold(asm_path, work_dir):
 def compile_and_simulate_dut(hex_path, work_dir, test_name):
     dut_trace = work_dir / (test_name + ".dut.trace")
     sim_bin = work_dir / (test_name + ".vvp")
+    trace_param = dut_trace.relative_to(REPO_ROOT).as_posix()
+    program_hex = REPO_ROOT / "program.hex"
 
     sources = [str(RTL / f) for f in RTL_SOURCES] + [str(PERIPHERALS), str(TB)]
     for src in sources:
@@ -78,16 +80,20 @@ def compile_and_simulate_dut(hex_path, work_dir, test_name):
 
     compile_cmd = [
         "iverilog", "-g2005", "-o", str(sim_bin),
-        f"-Ptb_dsd8.imem.IMAGE=\"{hex_path}\"",
-        f"-Ptb_dsd8.TRACE_FILE=\"{dut_trace}\"",
+        f"-Ptb_dsd8.TRACE_FILE=\"{trace_param}\"",
     ] + sources
-    r = run(compile_cmd)
-    if r.returncode != 0:
-        return None, f"iverilog compile failed:\n{r.stdout}{r.stderr}"
+    try:
+        shutil.copyfile(hex_path, program_hex)
+        r = run(compile_cmd, cwd=REPO_ROOT)
+        if r.returncode != 0:
+            return None, f"iverilog compile failed:\n{r.stdout}{r.stderr}"
 
-    r = run(["vvp", str(sim_bin)])
-    if r.returncode != 0:
-        return None, f"vvp simulation failed:\n{r.stdout}{r.stderr}"
+        r = run(["vvp", str(sim_bin)], cwd=REPO_ROOT)
+        if r.returncode != 0:
+            return None, f"vvp simulation failed:\n{r.stdout}{r.stderr}"
+    finally:
+        if program_hex.exists():
+            program_hex.unlink()
 
     return dut_trace, None
 

@@ -1,19 +1,5 @@
 #!/usr/bin/env python3
-"""
-run_unit_tests.py -- runs every per-module unit testbench under tb/
-(everything matching tb_*.v except tb_dsd8.v, which is the conformance
-harness and is run separately by run_conformance.py).
-
-Convention (see tb/README.md): a unit testbench prints exactly one of
-    TESTBENCH: PASS
-    TESTBENCH: FAIL (N errors)
-on stdout before finishing. This script compiles each testbench against
-every file in rtl/ (simplest thing that works for a project this size),
-runs it, and greps for that line.
-
-Exit code is non-zero if any testbench fails, is missing the expected
-output line, or does not compile.
-"""
+"""Compile and run each self-checking module testbench under tb/."""
 import pathlib
 import shutil
 import subprocess
@@ -21,17 +7,21 @@ import sys
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 RTL = REPO_ROOT / "rtl"
+PERIPHERALS = REPO_ROOT / "sim" / "peripherals.v"
 TB_DIR = REPO_ROOT / "tb"
 BUILD_DIR = REPO_ROOT / "build" / "unit"
 
 
 def run(cmd):
-    return subprocess.run(cmd, capture_output=True, text=True)
+    return subprocess.run(cmd, capture_output=True, text=True, cwd=REPO_ROOT)
 
 
 def main():
     BUILD_DIR.mkdir(parents=True, exist_ok=True)
-    tb_files = sorted(p for p in TB_DIR.glob("tb_*.v") if p.name != "tb_dsd8.v")
+    tb_files = sorted(
+        p for p in TB_DIR.glob("tb_*.v")
+        if p.name != "tb_dsd8.v"
+    )
 
     if not tb_files:
         print(f"no unit testbenches found under {TB_DIR} (expected tb_<module>.v files)")
@@ -43,13 +33,15 @@ def main():
             print("Install Icarus Verilog first, e.g.: sudo apt-get install iverilog", file=sys.stderr)
             sys.exit(3)
 
-    rtl_sources = [str(p) for p in sorted(RTL.glob("*.v"))]
+    rtl_sources = [str(p) for p in sorted(RTL.glob("*.v"))] + [str(PERIPHERALS)]
 
     n_pass = 0
     results = []
     for tb_path in tb_files:
         sim_bin = BUILD_DIR / (tb_path.stem + ".vvp")
-        compile_cmd = ["iverilog", "-g2005", "-o", str(sim_bin)] + rtl_sources + [str(tb_path)]
+        compile_cmd = [
+            "iverilog", "-g2005", "-s", tb_path.stem, "-o", str(sim_bin)
+        ] + rtl_sources + [str(tb_path)]
         r = run(compile_cmd)
         if r.returncode != 0:
             results.append((tb_path.name, "ERROR", f"compile failed:\n{r.stdout}{r.stderr}"))
@@ -57,12 +49,16 @@ def main():
 
         r = run(["vvp", str(sim_bin)])
         output = r.stdout + r.stderr
-        if "TESTBENCH: PASS" in output:
+        if r.returncode == 0 and "TESTBENCH: PASS" in output and "TESTBENCH: FAIL" not in output:
             results.append((tb_path.name, "PASS", None))
             n_pass += 1
-        elif "TESTBENCH: FAIL" in output:
+            print(output, end="")
+        elif "TESTBENCH: FAIL" in output or r.returncode != 0:
             fail_line = next((l for l in output.splitlines() if "TESTBENCH: FAIL" in l), "")
-            results.append((tb_path.name, "FAIL", fail_line))
+            details = fail_line or f"simulator exited {r.returncode}"
+            if output.strip():
+                details += "\n" + output.strip()
+            results.append((tb_path.name, "FAIL", details))
         else:
             results.append((tb_path.name, "ERROR",
                              "no TESTBENCH: PASS/FAIL line found -- see tb/README.md for the convention\n" + output))
